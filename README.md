@@ -1,131 +1,117 @@
 # Medical Appointment System
 
-A unified, cross-platform digital healthcare platform designed to streamline appointment scheduling, remote teleconsultations, secure payment processing, and clinical record management. The project bridges patient interaction via a mobile application with hospital administration via a web-based portal.
+A complete digital healthcare platform built to make booking and managing medical appointments simple and stress-free. The project includes a mobile app for patients and a web portal for hospital staff (doctors, pharmacists, and administrators) so everyone stays safely connected.
 
 ---
 
 ## 📋 Table of Contents
 - [Project Overview](#-project-overview)
-- [System Architecture](#%EF%B8%8F-system-architecture)
-- [Core Features & User Roles](#-core-features--user-roles)
-- [Technical Stack & Integrations](#-technical-stack--integrations)
-- [Database Design](#-database-design)
-- [Core Business Logic & Workflows](#-core-business-logic--workflows)
-- [Testing & Quality Assurance](#-testing--quality-assurance)
-- [Project Boundaries (Out of Scope)](#-project-boundaries-out-of-scope)
+- [How the System Works](#-how-the-system-works)
+- [Core Features for Everyone](#-core-features-for-everyone)
+- [Tools Used to Build the System](#-tools-used-to-build-the-system)
+- [Database Structure](#-database-structure)
+- [Important Rules & Features](#-important-rules--features)
+- [How We Tested the System](#-how-we-tested-the-system)
+- [What the System Does Not Do (Out of Scope)](#-what-the-system-does-not-do-out-of-scope)
 
 ---
 
 ## 🌟 Project Overview
-Traditional healthcare scheduling faces severe bottlenecks, including manual coordination errors, long physical waiting queues, and restricted access for individuals in remote areas or with physical limitations. 
+Traditional hospital booking often comes with long waiting lines, accidental scheduling mistakes, and difficulty accessing doctors for patients who live far away or have trouble moving around. 
 
-This project delivers a robust, secure, and user-centered solution that digitizes clinical workflows. It supports four distinct stakeholder groups (Patients, Doctors, Pharmacists, and Administrators) to guarantee accurate information flow from initial slot booking to electronic prescription fulfillment.
-
----
-
-## 🗺️ System Architecture
-The platform implements a modular client-server architecture with strict separation of layers to maximize portability, maintainability, and horizontal scalability.
-┌────────────────────────────────────────────────────────┐
-│                   PRESENTATION LAYER                   │
-│   ┌──────────────────────────┐  ┌──────────────────┐   │
-│   │   Patient Mobile App     │  │   Staff Portal   │   │
-│   │        (Flutter)         │  │     (Laravel)    │   │
-│   └──────────────────────────┘  └──────────────────┘   │
-└───────────────────────────┬────────────────────────────┘
-│ HTTPS / REST JSON
-┌───────────────────────────▼────────────────────────────┐
-│                  BUSINESS LOGIC LAYER                  │
-│               ┌──────────────────────────┐             │
-│               │       Backend API        │             │
-│               │        (Laravel)         │             │
-│               └────────────┬─────────────┘             │
-└────────────────────────────┼───────────────────────────┘
-│ SQL Connect
-┌────────────────────────────▼───────────────────────────┐
-│                       DATA LAYER                       │
-│               ┌──────────────────────────┐             │
-│               │       MySQL Server       │             │
-│               └──────────────────────────┘             │
-└────────────────────────────────────────────────────────┘
-
-1. **Presentation Layer (Client Side):** A cross-platform Flutter application tailored for end-user patients alongside a responsive Laravel blade-rendered web portal dedicated to hospital workers.
-2. **Business Logic Layer (Server Side):** A centralized RESTful API framework handling role-based access management, security validation, third-party handshakes, and transaction execution.
-3. **Data Layer (Storage):** A structured MySQL relational instance storing profiles, historical appointments, logs, and cryptographic hashes safely.
+This project solves those issues by moving everything into a secure digital network. It helps patients book easily from home and helps hospital staff manage daily records and prescriptions without paperwork confusion.
 
 ---
 
-## 👥 Core Features & User Roles
+## 🗺️ How the System Works
+The system is cleanly divided into different parts to keep data safe and ensure the app loads quickly. 
 
-### 📱 1. Patient Module (Mobile App)
-* **Account Provisioning:** Real-time validated sign-up and login utilizing localized configurations for English/Arabic bilingual view and Light/Dark dynamic themes.
-* **Unified Appointment Flow:** Multi-step wizard to selectively pick clinical departments, verify available specialists, calendar select dates, and choose generated timeslots.
-* **Integrated Telemedicine:** Join temporary virtual video conference appointments with medical providers using direct deep-linking.
-* **History & Ledger:** Review complete medical timelines including past invoices, canceled receipts, and prescriptions.
+![System Architecture](assets/System%20Architicture)
 
-### 💻 2. Doctor Module (Web Portal)
-* **Schedule Coordinator:** Aggregated operational view classifying daily schedules into *Upcoming*, *Completed*, or *Canceled* states.
-* **Tele-Consultation Interface:** Direct single-click button connection to the active Jitsi call with full display-role identification.
-* **Digital Prescription Desk:** Create structural prescription documents (JSON-formatted arrays containing medication instructions and administrative comments) transmitted instantly to pharmacy queues.
-
-### 💊 3. Pharmacist Module (Web Portal)
-* **Patient Lookup:** Fast indexing capability to retrieve active patient logs by string names, registered emails, or official government ID numbers.
-* **Prescription Dispatch:** Access real-time digital medical notes drafted by clinicians to fill precise orders safely, mitigating manual reading mistakes.
-
-### 🛠️ 4. Administrator Module (Web Portal)
-* **System CRUD Controller:** Master structural configuration authority to build, read, update, or deactivate entities inside the system (Clinics, Doctors, and Patient Accounts).
-* **Audit Dashboard:** Analytical overview aggregating core business metrics (e.g., Total Users, Active Invoices, Cancelled Slots) with complete financial transaction records.
+1. **The User Screens:** The easy-to-use screens that patients see on their phones and hospital staff see on their web browsers.
+2. **The Main Brain (API Backend):** The hidden server that double-checks logins, processes bookings, and links everything together safely.
+3. **The Secure Storage (Database):** A digital filing cabinet that saves user profiles, timeslots, appointment history, and prescriptions.
 
 ---
 
-## 🛠 Technical Stack & Integrations
+## 👥 Core Features for Everyone
 
-* **Frontend:** Flutter SDK (Dart) for high-performance platform-agnostic compilation (Android 10.0+ / iOS 14.0+).
-* **Backend:** Laravel Framework (PHP) providing modular REST API bridges with structured snake_case notation.
-* **Database:** MySQL Server 8.0 implementing ACID compliance, referential constraints, and optimized indices.
-* **Payment Processing (Stripe Integration):** Employs the native Stripe SDK via a **Reserve-Pay-Confirm** pattern. Includes backend `PaymentIntent` architecture paired with asynchronous background server-side webhooks (`payment_intent.succeeded`) to safely resolve edge cases like sudden client disconnection.
-* **Video Conferencing (Jitsi Meet Integration):** Integrated open-source RTC video infrastructure. Rooms are named dynamically after appointment primary keys (`appointment_123`). A specialized server-side endpoint generates secure short-lived entry tokens checking ownership metrics before authorization. Sessions are strictly live and never persisted on disk to guarantee compliance with medical privacy policies.
+### Project Functions Blueprint
+![Use Case Diagram](assets/Use%20Case)
 
----
+### 📱 1. For Patients (Mobile App)
+* **Easy Account Setup:** Create an account securely with real-time helper guides, English or Arabic language choices, and a comfortable Dark Mode theme.
+* **Simple Booking Wizard:** A step-by-step guide to pick a medical clinic, choose a preferred doctor, check open days, and select an open 30-minute timeslot.
+* **Video Consultations:** Join a live, secure video call with your doctor directly inside the app so you do not have to drive to the clinic.
+* **Personal Medical History:** Keep track of your past hospital bills, cancellation receipts, and active prescriptions anytime.
 
-## 🗄️ Database Design
-The relational model enforces high data integrity across key entities:
+### 💻 2. For Doctors (Web Portal)
+* **Daily Schedule Manager:** A clear dashboard that organizes the doctor's daily calendar into *Upcoming*, *Finished*, or *Canceled* visits.
+* **Easy Video Join:** A single-click button that lets the doctor jump right into a video call with the waiting patient.
+* **Digital Prescription Pen:** Send digital prescriptions instantly to the pharmacy database as soon as a consultation is completed.
 
-### 🧩 Entity Relationship Summary
-* `USERS` ───[ 1 : N ]───► `APPOINTMENTS` *(One patient can book multiple sessions)*
-* `CLINICS` ───[ 1 : N ]───► `DOCTORS` *(Clinics house specialized medical specialists)*
-* `DOCTORS` ───[ 1 : N ]───► `APPOINTMENTS` *(Doctors manage a schedule of visits)*
-* `APPOINTMENTS` ───[ 1 : 1 ]───► `PAYMENTS` *(Each valid booking maps to exactly one Stripe transaction)*
-* `APPOINTMENTS` ───[ 1 : 1 ]───► `CONSULTATION_SESSIONS` *(Tracks live teleconsultation duration/links)*
-* `DOCTORS` ───[ 1 : N ]───► `PRESCRIPTIONS` *(Clinicians log drugs directly inside a JSON array field)*
+### 💊 3. For Pharmacists (Web Portal)
+* **Quick Patient Search:** Easily find a patient's folder by typing their name, email, or government ID card number.
+* **Instant Prescription View:** Read clear, digital medicine orders sent directly by the doctor, preventing handwriting mistakes and dispensing medicine faster.
 
----
-
-## 🔄 Core Business Logic & Workflows
-
-### ⏳ 1. Expiration Slot Locking (Concurrency Management)
-To prevent double-booking conflicts during client checkout checkout, the Laravel backend uses a 15-minute expiration block window:
-1. When a patient chooses a time, the server generates an entry with status `pending_payment` and sets a `reserved_until` column to `now()->addMinutes(15)`.
-2. Standard slot searches exclude records locked by active, unexpired pending reservations.
-3. Pre-intent validation checks this timestamp again directly before firing external payment sheets to avert expired checkout actions.
-
-### 🛑 2. Cancellation Policy Validation
-* Cancellations alter record flags to `canceled` to preserve history logs for administrative audits rather than removing rows permanently.
-* The software architecture limits refund entitlement rules via an automated validation logic: cancellations must be processed at least 24 hours prior to slot times, otherwise execution paths are blocked.
+### 🛠️ 4. For System Administrators (Web Portal)
+* **Hospital Control Center:** Full power to add, update, or temporarily turn off clinics, doctor profiles, and patient accounts.
+* **Live Audit Dashboard:** A visual dashboard tracking crucial hospital numbers like total registered users, current payments, and canceled appointment metrics.
 
 ---
 
-## 🧪 Testing & Quality Assurance
-The platform was validated using rigorous manual execution procedures tracking logic compliance back to software specifications:
+## 🛠 Tools Used to Build the System
 
-* **Functional Testing (Black Box):** Evaluated explicit boundary parameters, password notation metrics (minimum 8 text characters containing symbols), and role interfaces.
-* **Integration Testing:** Verified multi-system communication loops verifying that external Stripe authorization calls properly update the MySQL data storage layer and trigger real-time mobile app dashboard changes.
-* **Core Defect Resolution:** Caught an authentication gap where expired slot locking structures allowed payment sheet execution. Resolved this by implementing immediate pre-flight server validation checks inside `AppointmentController.php` to drop expired slots gracefully with a `409 Conflict` API code.
+* **Flutter:** The framework used to build the beautiful mobile app so it works flawlessly on both Android phones and iPhones.
+* **Laravel (PHP):** The server programming language used to build the "brain" of the system, keeping all logic organized and secure.
+* **MySQL:** The reliable database engine used to run the digital storage filing cabinet.
+* **Stripe (Money Gateway):** A globally trusted payment framework integrated into the app. It uses an automated **Reserve-Pay-Confirm** workflow paired with intelligent background safety triggers. This means if your phone battery dies right as you pay, the system safely confirms your booking automatically.
+* **Jitsi Meet (Video Engine):** The video system that powers the online consultations. It creates an isolated video chat room for every single appointment to keep calls private. Calls are completely live and are **never recorded or stored** anywhere to guarantee total patient privacy.
 
 ---
 
-## ⚠️ Project Boundaries (Out of Scope)
-To ensure a structured prototype release cycle, the following parameters are strictly out of scope:
-* **Automated External Recovery:** Reset workflows for user passwords via automated external mail server routing are bypassed; adjustments must happen internally on user profile panels.
-* **Automated Stripe Cash Reversals:** Refund database changes register inside storage blocks automatically, but actual asset reversal processes must be manually initiated inside the official Stripe Dashboard by hospital managers.
-* **Advanced Biometrics & Hardware Security:** Complex multi-factor validation, fingerprint recognition (Touch ID), or specialized hardware-level data encryption is deferred to subsequent updates.
-* **Clinical Diagnostic Systems:** The portal does not replace formal Electronic Health Record environments, provide automated computer-generated symptom medical advice, or manage delivery logistics for physical pharmacy distribution.
+## 🗄️ Database Structure
+The digital filing cabinet organizes data cleanly using safe relational connections so information never gets mixed up:
+
+### Relational Storage Chart
+![Entity Relationship Diagram](assets/Entity%20Relationship%20Diagram)
+
+* Each **Patient** can book multiple separate appointments over time.
+* Each **Clinic** department supports multiple professional doctors.
+* Each **Appointment** connects to exactly one secure Stripe payment receipt and tracks its own live video session details.
+* **Prescriptions** are safely tied to the specific appointment history and saved inside optimized data formats for the pharmacist to load instantly.
+
+---
+
+## 🔄 Important Rules & Features
+
+### ⏳ 1. The 15-Minute Booking Lock
+To make sure two patients do not accidentally pay for the exact same timeslot at the same time, the system uses an intelligent countdown lock:
+
+![Booking Sequence Diagram](assets/Sequence%20Diagram)
+
+1. The moment you tap on an open time slot, the system locks it just for you and marks it as `Pending Payment`.
+2. The system holds the slot and gives you a 15-minute window to enter your card details.
+3. Other patients browsing the app cannot see or steal that slot while your timer is running. If the timer runs out before you finish paying, the slot is immediately released for others to book.
+
+### 🛑 2. Simple 24-Hour Cancellation Policy
+* If a patient cancels an appointment, the system updates its status text to `Canceled` instead of deleting it, keeping records accurate for auditing.
+* To respect the doctors' time, cancellations must be done at least 24 hours before the appointment. If a user tries to cancel at the last minute, the app will politely block the action and notify them of the 24-hour rule.
+
+---
+
+## 🧪 How We Tested the System
+We put the entire application through strict real-world testing scenarios to verify that it is reliable and completely bug-free:
+
+* **Screen Testing:** We checked every button, entry form, and language switch to ensure they respond perfectly and securely block invalid passwords.
+* **Integration Testing:** We simulated real bank cards using Stripe to ensure that payment confirmations instantly update the hospital dashboard and lock in the correct slots.
+* **Fixing Bugs:** During testing, we caught an issue where patients could accidentally finish checking out even if their 15-minute booking timer had run out. We immediately modified the system code to force a final time-check right before money is charged, safely correcting the issue.
+
+---
+
+## ⚠️ What the System Does Not Do (Out of Scope)
+To ensure the initial prototype works perfectly, a few advanced options were left out of this version:
+* **Automated Password Reset Emails:** There is no automated "Forgot Password" link sent to external emails; password changes are safely managed inside your active profile settings screen.
+* **Automated Bank Refunds:** Cancelled bookings register in the database automatically, but actual money refunds must be manually triggered on the official Stripe website by a hospital admin.
+* **Fingerprint/Face Recognition:** Biometric logins and multi-factor authentication are saved for future updates.
+* **Automated Medical Advice & Delivery:** The app is strictly for scheduling and prescriptions. It does **not** give computer-generated medical diagnoses or manage physical medicine home delivery.
