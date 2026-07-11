@@ -24,19 +24,20 @@ This project solves those issues by moving everything into a secure digital netw
 ---
 
 ## 🗺️ How the System Works
-The system is cleanly divided into different parts to keep data safe and ensure the app loads quickly. 
+The system connects different users together through a secure backend cloud server to make sure data flows quickly and safely.
 
 ![System Architecture](assets/System%20Architicture)
 
-1. **The User Screens:** The easy-to-use screens that patients see on their phones and hospital staff see on their web browsers.
-2. **The Main Brain (API Backend):** The hidden server that double-checks logins, processes bookings, and links everything together safely.
-3. **The Secure Storage (Database):** A digital filing cabinet that saves user profiles, timeslots, appointment history, and prescriptions.
+* **Patients** use their smartphones to download the mobile app to book visits and view prescriptions.
+* **Doctors, Administrators, and Pharmacists** log into a centralized Web Staff Portal from their computers.
+* **The API Backend** sits in the middle acting as the system's brain, saving all data securely inside the central **Database**.
 
 ---
 
 ## 👥 Core Features for Everyone
 
-### Project Functions Blueprint
+The blueprint below maps out exactly what features are available for each user type, including the integrated external services:
+
 ![Use Case Diagram](assets/Use%20Case)
 
 ### 📱 1. For Patients (Mobile App)
@@ -58,6 +59,10 @@ The system is cleanly divided into different parts to keep data safe and ensure 
 * **Hospital Control Center:** Full power to add, update, or temporarily turn off clinics, doctor profiles, and patient accounts.
 * **Live Audit Dashboard:** A visual dashboard tracking crucial hospital numbers like total registered users, current payments, and canceled appointment metrics.
 
+### 🔌 5. Integrated Third-Party Services
+* **Jitsi Meet API:** Directly connects to the online consultation features to host the live, face-to-face video stream rooms safely for patients and doctors.
+* **Payment Gateway (Stripe API):** Directly connects to the patient's payment button to handle secure credit card verification data out-of-the-box.
+
 ---
 
 ## 🛠 Tools Used to Build the System
@@ -71,28 +76,26 @@ The system is cleanly divided into different parts to keep data safe and ensure 
 ---
 
 ## 🗄️ Database Structure
-The digital filing cabinet organizes data cleanly using safe relational connections so information never gets mixed up:
+The digital filing cabinet organizes hospital data cleanly so files never get mixed up or lost:
 
-### Relational Storage Chart
 ![Entity Relationship Diagram](assets/Entity%20Relationship%20Diagram)
 
-* Each **Patient** can book multiple separate appointments over time.
-* Each **Clinic** department supports multiple professional doctors.
-* Each **Appointment** connects to exactly one secure Stripe payment receipt and tracks its own live video session details.
-* **Prescriptions** are safely tied to the specific appointment history and saved inside optimized data formats for the pharmacist to load instantly.
+* **Users & Payments:** Patient profiles are linked directly to their specific payment billing records.
+* **Clinics & Doctors:** Clinic departments have a one-to-many relationship with doctors (one clinic can host multiple specialists).
+* **Appointments & Prescriptions:** Every appointment tracks its specific clinic department, doctor, time, payment status, and can contain an attached digital prescription layout for the pharmacist to load instantly.
 
 ---
 
 ## 🔄 Important Rules & Features
 
 ### ⏳ 1. The 15-Minute Booking Lock
-To make sure two patients do not accidentally pay for the exact same timeslot at the same time, the system uses an intelligent countdown lock:
+To make sure two patients do not accidentally pay for the exact same timeslot at the same time, the system uses a step-by-step verification process:
 
 ![Booking Sequence Diagram](assets/Sequence%20Diagram)
 
-1. The moment you tap on an open time slot, the system locks it just for you and marks it as `Pending Payment`.
-2. The system holds the slot and gives you a 15-minute window to enter your card details.
-3. Other patients browsing the app cannot see or steal that slot while your timer is running. If the timer runs out before you finish paying, the slot is immediately released for others to book.
+1. When a patient requests a slot, the **Mobile App** asks the **Backend API** to check the **Database**.
+2. If it is free, the server changes the slot status to `Pending Payment` and starts a **15-minute countdown clock**.
+3. The patient is prompted to enter their card info safely via **Stripe**. Once authorized, a success token drops back to the backend, updating the appointment to a finalized `Confirmed` status. If the clock runs out before payment is finished, the slot automatically becomes open for anyone else to book.
 
 ### 🛑 2. Simple 24-Hour Cancellation Policy
 * If a patient cancels an appointment, the system updates its status text to `Canceled` instead of deleting it, keeping records accurate for auditing.
@@ -100,7 +103,7 @@ To make sure two patients do not accidentally pay for the exact same timeslot at
 
 ---
 
-## 🧪 How We Tested the System
+## 🧪 How the System Was Tested
 We put the entire application through strict real-world testing scenarios to verify that it is reliable and completely bug-free:
 
 * **Screen Testing:** We checked every button, entry form, and language switch to ensure they respond perfectly and securely block invalid passwords.
